@@ -51,268 +51,221 @@ tr.sh td{background:#f8fafc;font-weight:700;color:var(--navy)}
 @media(max-width:900px){.grid2{grid-template-columns:1fr}}
 </style></head><body>
 <div id="topbar"><div class="head"><h1>약진 해외생산법인 소모품비 — JSV(의류) · JSB(핸드백)</h1>
-<span class="sub">2026년 5월 마감 · 베트남 현지법인 · 환율 $1 = VND 26,000 · KPI 클릭=계산식</span></div></div>
+<span class="sub">2026년 5월 마감 · US$ 기준 (VND 26,000/$) · KPI 클릭=계산식</span></div></div>
 
 <script>
-const DATA = {
-  entities: {
-    JSV: { label:"의류 JSV", group:"의류", color:"#1f3864", short:"JSV" },
-    JSB: { label:"핸드백 JSB", group:"핸드백", color:"#b88a2e", short:"JSB" }
-  },
-  kpiDefs: [
-    { id:"consVND", label:"소모품비(VND)", formula:"당월 소모품비 발생 금액 (VAT 제외)", unit:"VND" },
-    { id:"consAmt", label:"소모품비($)", formula:"소모품비(VND) ÷ 환율(26,000)", unit:"$" },
-    { id:"wageVND", label:"가공임(VND)", formula:"당월 가공임(공정임) 금액", unit:"VND" },
-    { id:"ratio", label:"소모품비율(%)", formula:"소모품비(VND) ÷ 가공임(VND) × 100", unit:"%" },
-    { id:"totalVND", label:"합계(VAT포함)", formula:"소모품비 + 부가세(VAT 8~10%)", unit:"VND" },
-    { id:"vat", label:"부가세(VND)", formula:"당월 부가세 금액", unit:"VND" }
+const EX=26000;
+const D={
+  entities:{JSV:{label:"의류 JSV",group:"의류",color:"#1f3864",short:"JSV"},JSB:{label:"핸드백 JSB",group:"핸드백",color:"#b88a2e",short:"JSB"}},
+  kpiDefs:[
+    {id:"consAmt",label:"소모품비($)","formula":"소모품비(VND) ÷ 26,000","unit":"$"},
+    {id:"wageAmt",label:"가공임($)","formula":"가공임(VND) ÷ 26,000","unit":"$"},
+    {id:"consVND",label:"소모품비(VND)","formula":"당월 소모품비 (VAT 제외)","unit":"VND"},
+    {id:"ratio",label:"효율(%)","formula":"소모품비(VND) ÷ 가공임(VND) × 100","unit":"%"},
+    {id:"vatUSD",label:"VAT($)","formula":"부가세(VND) ÷ 26,000","unit":"$"},
+    {id:"totalUSD",label:"합계($)","formula":"(소모품비+VAT) ÷ 26,000","unit":"$"}
   ],
-  entityData: {
-    JSV: { name:"의류 JSV",
-      consVND:125554000, consAmt:4829, wageVND:940700,
-      ratio:0.86, vat:9553640, totalVND:135107640, headcount:160,
-      categories:[
-        {name:"정기반소모품", total:12671.33, months:[2853.76,1905.66,2318.41,3227.67,2365.82]},
-        {name:"수선용소모품", total:7486.11, months:[1717.99,2005.92,1103.35,1300.60,1358.25]},
-        {name:"절단용소모품", total:2955.46, months:[1174.46,284.44,710.65,352.87,433.04]},
-        {name:"구매부자재", total:14019.01, months:[1953.67,1077.83,7214.88,797.68,2974.95]}
+  ed:{
+    JSV:{name:"의류 JSV",consVND:125554000,consAmt:4829,wageVND:940700,wageAmt:36,vatVND:9553640,vatAmt:367,totalVND:135107640,totalAmt:5196,ratio:0.86,
+      cats:[
+        {n:"정기반소모품",t:12671.33,m:[2853.76,1905.66,2318.41,3227.67,2365.82]},
+        {n:"수선용소모품",t:7486.11,m:[1717.99,2005.92,1103.35,1300.60,1358.25]},
+        {n:"절단용소모품",t:2955.46,m:[1174.46,284.44,710.65,352.87,433.04]},
+        {n:"구매부자재",t:14019.01,m:[1953.67,1077.83,7214.88,797.68,2974.95]}
       ],
-      suppliers:[
-        {name:"NHAT QUANG MINH", vnd:29858920, note:"PLANT 2"},
-        {name:"PHUOC THUANH (TAE GWANG)", vnd:75545460, note:"PLANT 2"},
-        {name:"DAI TAN 5 (YANG JI)", vnd:6446000, note:"PLANT 2"},
-        {name:"BAMBU", vnd:4185000, note:"PLANT 2"},
-        {name:"YANGJI HITECH", vnd:7063200, note:"PLANT 2"},
-        {name:"SONG THAP (BK)", vnd:12009060, note:"PLANT 2"}
+      sups:[
+        {n:"PHUOC THUANH (TAE GWANG)",v:75545460,d:"PLANT 2"},
+        {n:"NHAT QUANG MINH",v:29858920,d:"PLANT 2"},
+        {n:"SONG THAP (BK)",v:12009060,d:"PLANT 2"},
+        {n:"YANGJI HITECH",v:7063200,d:"PLANT 2"},
+        {n:"DAI TAN 5 (YANG JI)",v:6446000,d:"PLANT 2"},
+        {n:"BAMBU",v:4185000,d:"PLANT 2"}
       ]
     },
-    JSB: { name:"핸드백 JSB",
-      consVND:197336622, consAmt:7589, wageVND:1228786,
-      ratio:4.89, vat:16265408, totalVND:213602030, headcount:450,
-      categories:[
-        {name:"정기반소모품", total:21247.35, months:[3305.33,2306.55,6787.95,5407.87,3439.65]},
-        {name:"수선용소모품", total:10833.83, months:[2208.15,1938.82,2835.36,1799.39,2052.10]},
-        {name:"절단용소모품", total:7863.57, months:[1228.67,1082.49,1093.16,1775.83,2683.42]},
-        {name:"구매부자재", total:9976.41, months:[5002.55,2895.08,548.49,882.88,647.41]}
+    JSB:{name:"핸드백 JSB",consVND:197336622,consAmt:7590,wageVND:1228786,wageAmt:47,vatVND:16265408,vatAmt:626,totalVND:213602030,totalAmt:8215,ratio:4.89,
+      cats:[
+        {n:"정기반소모품",t:21247.35,m:[3305.33,2306.55,6787.95,5407.87,3439.65]},
+        {n:"수선용소모품",t:10833.83,m:[2208.15,1938.82,2835.36,1799.39,2052.10]},
+        {n:"절단용소모품",t:7863.57,m:[1228.67,1082.49,1093.16,1775.83,2683.42]},
+        {n:"구매부자재",t:9976.41,m:[5002.55,2895.08,548.49,882.88,647.41]}
       ],
-      suppliers:[
-        {name:"GIANG LONG", vnd:32138836, note:"HB/SLG"},
-        {name:"HAN THANH", vnd:21157200, note:"HB"},
-        {name:"TAE GWANG", vnd:21004054, note:"HB/SLG"},
-        {name:"VIMA (SLG)", vnd:24572000, note:"SLG"},
-        {name:"DONG J", vnd:8731800, note:"HB"},
-        {name:"PHUOC THU", vnd:4536000, note:"HB"}
+      sups:[
+        {n:"GIANG LONG",v:32138836,d:"HB/SLG"},
+        {n:"VIMA (SLG)",v:24572000,d:"SLG"},
+        {n:"HAN THANH",v:21157200,d:"HB"},
+        {n:"TAE GWANG",v:21004054,d:"HB/SLG"},
+        {n:"DONG J",v:8731800,d:"HB"},
+        {n:"PHUOC THU",v:4536000,d:"HB"}
       ]
     }
   },
-  timeSeries: {
-    JSV: [7699.88,5273.85,11347.29,5678.82,7132.06],
-    JSB: [11744.70,8222.94,11264.95,9865.98,8822.58]
-  }
+  ts:{JSV:[7699.88,5273.85,11347.29,5678.82,7132.06],JSB:[11744.70,8222.94,11264.95,9865.98,8822.58]}
 };
-
-let state = { selected: {JSV:true,JSB:true}, tab:"all", chartMode:"monthly" };
-const EX = 26000;
-function s(q){return document.querySelectorAll(q);}
-function o(q){return document.querySelector(q);}
-
-function toggleEntity(k){
-  state.selected[k]=!state.selected[k]; renderAll();
-}
-
-function switchTab(t){
-  state.tab=t;
-  o("#tabAll").className="tab"+(t==="all"?" on":"");
-  o("#tabDetail").className="tab"+(t==="detail"?" on":"");
-  o("#tabAllContent").style.display=t==="all"?"":"none";
-  o("#tabDetailContent").style.display=t==="detail"?"":"none";
-}
-
-function setChartMode(m){
-  state.chartMode=m;
-  s(".btn.cmode").forEach(b=>b.className="btn cmode"+(b.dataset.mode===m?" on":""));
-  renderChart();
-}
-
-function showFormula(kpi){
-  const kd=DATA.kpiDefs.find(k=>k.id===kpi);
-  o(".modal h4").textContent=kd?kd.label:kpi;
-  o(".modal .formula").textContent=kd?kd.formula:"";
-  o(".modal-bg").classList.add("show");
-}
-function closeFormula(){o(".modal-bg").classList.remove("show");}
-
-function renderKPIs(){
-  const c=o("#kpiGrid"); c.innerHTML="";
-  const ek=Object.keys(DATA.entityData).filter(k=>state.selected[k]);
-  if(!ek.length){c.innerHTML='<div class="muted" style="text-align:center;padding:30px">법인 선택</div>'; return;}
-  const s={consVND:0,consAmt:0,wageVND:0,vat:0,totalVND:0};
-  ek.forEach(k=>{const d=DATA.entityData[k]; s.consVND+=d.consVND; s.consAmt+=d.consAmt; s.wageVND+=d.wageVND; s.vat+=d.vat; s.totalVND+=d.totalVND;});
-  DATA.kpiDefs.forEach(kd=>{
-    let val=""; const u=kd.unit;
-    if(kd.id==="consVND"){val=s.consVND.toLocaleString()}
-    else if(kd.id==="consAmt"){val="$"+s.consAmt.toLocaleString()}
-    else if(kd.id==="wageVND"){val=s.wageVND.toLocaleString()}
-    else if(kd.id==="totalVND"){val=s.totalVND.toLocaleString();}
-    else if(kd.id==="ratio"){const r=s.wageVND?(s.consVND/s.wageVND*100):0; val=r.toFixed(2);}
-    else if(kd.id==="vat"){val=s.vat.toLocaleString()}
-    const div=document.createElement("div");div.className="ckpi";div.onclick=()=>showFormula(kd.id);
-    div.innerHTML=`<div class="ckh">${kd.label}</div><div class="ckv">${val} <span class="cks">${u}</span></div><div class="ckd">선택 ${ek.length}개</div>`;
+let st={sel:{JSV:true,JSB:true},tab:"all",cm:"monthly"};
+function $(q){return document.querySelector(q);}
+function $$(q){return document.querySelectorAll(q);}
+function tog(k){st.sel[k]=!st.sel[k];ra();}
+function sw(t){st.tab=t;$("#tabAll").className="tab"+(t==="all"?" on":"");$("#tabD").className="tab"+(t==="d"?" on":"");$("#tabAllC").style.display=t==="all"?"":"none";$("#tabDC").style.display=t==="d"?"":"none";}
+function scm(m){st.cm=m;$$(".btn.cm").forEach(b=>b.className="btn cm"+(b.dataset.m===m?" on":""));rc();}
+function sf(k){const d=D.kpiDefs.find(x=>x.id===k);$(".modal h4").textContent=d?d.label:k;$(".modal .formula").textContent=d?d.formula:"";$(".modal-bg").classList.add("show");}
+function cf(){$(".modal-bg").classList.remove("show");}
+function fs(v,d){return typeof v==='number'?'$'+v.toLocaleString(undefined,{minimumFractionDigits:d||0,maximumFractionDigits:d||0}):v;}
+function rk(){
+  const c=$("#kpiGrid");c.innerHTML="";
+  const ek=Object.keys(D.ed).filter(k=>st.sel[k]);
+  if(!ek.length){c.innerHTML='<div class="muted" style="text-align:center;padding:30px">법인 선택</div>';return;}
+  const s={cV:0,cA:0,wV:0,wA:0,vV:0,vA:0,tV:0,tA:0};
+  ek.forEach(k=>{const d=D.ed[k];s.cV+=d.consVND;s.cA+=d.consAmt;s.wV+=d.wageVND;s.wA+=d.wageAmt;s.vV+=d.vatVND;s.vA+=d.vatAmt;s.tV+=d.totalVND;s.tA+=d.totalAmt;});
+  D.kpiDefs.forEach(kd=>{
+    let v="";const u=kd.unit;
+    if(kd.id==="consAmt"){v=fs(s.cA,0)}
+    else if(kd.id==="wageAmt"){v=fs(s.wA,0)}
+    else if(kd.id==="consVND"){v=s.cV.toLocaleString()}
+    else if(kd.id==="ratio"){const r=s.wV?(s.cV/s.wV*100):0;v=r.toFixed(2)}
+    else if(kd.id==="vatUSD"){v=fs(s.vA,0)}
+    else if(kd.id==="totalUSD"){v=fs(s.tA,0)}
+    const div=document.createElement("div");div.className="ckpi";div.onclick=()=>sf(kd.id);
+    div.innerHTML=`<div class="ckh">${kd.label}</div><div class="ckv">${v} <span class="cks">${u}</span></div><div class="ckd">선택 ${ek.length}개</div>`;
     c.appendChild(div);
   });
 }
-
-function renderEntityCards(){
-  const c=o("#entityRow"); c.innerHTML="";
-  const groups={};
-  Object.keys(DATA.entities).forEach(k=>{const e=DATA.entities[k];(groups[e.group]=groups[e.group]||[]).push(k);});
-  Object.entries(groups).forEach(([g,ks])=>{
-    const gdiv=document.createElement("div");gdiv.className="egroup";
-    const gbtn=document.createElement("div");gbtn.className="ghbtn";
-    gbtn.style.borderColor="#1f3864";const anyOn=ks.some(k=>state.selected[k]);
-    gbtn.style.color=anyOn?"#fff":"#1f3864";gbtn.style.background=anyOn?"#1f3864":"#fff";
-    gbtn.textContent=g;gbtn.onclick=()=>{ks.forEach(k=>state.selected[k]=!anyOn);renderAll();};
-    gdiv.appendChild(gbtn);
-    const chips=document.createElement("div");chips.className="echips";
+function re(){
+  const c=$("#entityRow");c.innerHTML="";
+  const g={};
+  Object.keys(D.entities).forEach(k=>{const e=D.entities[k];(g[e.group]=g[e.group]||[]).push(k);});
+  Object.entries(g).forEach(([g,ks])=>{
+    const gd=document.createElement("div");gd.className="egroup";
+    const gb=document.createElement("div");gb.className="ghbtn";
+    gb.style.borderColor="#1f3864";const ao=ks.some(k=>st.sel[k]);
+    gb.style.color=ao?"#fff":"#1f3864";gb.style.background=ao?"#1f3864":"#fff";
+    gb.textContent=g;gb.onclick=()=>{ks.forEach(k=>st.sel[k]=!ao);ra();};
+    gd.appendChild(gb);
+    const ch=document.createElement("div");ch.className="echips";
     ks.forEach(k=>{
-      const e=DATA.entities[k];const d=DATA.entityData[k];
+      const e=D.entities[k];const d=D.ed[k];
       const r=d.wageVND?(d.consVND/d.wageVND*100):0;
       const fc=r<=1?"#059669":r<=3?"#b88a2e":"#dc2626";
-      const ec=document.createElement("div");ec.className="ecard"+(state.selected[k]?" on":"");
-      ec.onclick=()=>toggleEntity(k);
-      ec.innerHTML=`<div class="eab">${e.short}</div><div class="esc" style="color:${e.color}">${(d.consVND/1e6).toFixed(1)}M VND</div><div class="egr" style="background:${fc}">${r.toFixed(2)}%</div>`;
-      chips.appendChild(ec);
+      const ec=document.createElement("div");ec.className="ecard"+(st.sel[k]?" on":"");
+      ec.onclick=()=>tog(k);
+      ec.innerHTML=`<div class="eab">${e.short}</div><div class="esc" style="color:${e.color}">$${d.consAmt.toLocaleString()}</div><div class="egr" style="background:${fc}">${r.toFixed(1)}%</div>`;
+      ch.appendChild(ec);
     });
-    gdiv.appendChild(chips);c.appendChild(gdiv);
+    gd.appendChild(ch);c.appendChild(gd);
   });
 }
-
-function renderChart(){
-  const canvas=o("#mainChart");
-  if(window._chart){window._chart.destroy();window._chart=null;}
-  const ek=Object.keys(DATA.entityData).filter(k=>state.selected[k]);
+function rc(){
+  const cv=$("#mainChart");
+  if(window._c){window._c.destroy();window._c=null;}
+  const ek=Object.keys(D.ed).filter(k=>st.sel[k]);
   if(!ek.length)return;
-  
-  if(state.chartMode==="category"){
-    const cats=["정기반소모품","수선용소모품","절단용소모품","구매부자재"];
-    const colors=["#1f3864","#2563eb","#7c3aed","#b88a2e"];
-    const dss=cats.map((c,ci)=>({label:c,data:[],backgroundColor:colors[ci],borderColor:colors[ci],borderWidth:1}));
-    ek.forEach(k=>{const d=DATA.entityData[k]; cats.forEach((c,ci)=>{const f=d.categories.find(x=>x.name===c); dss[ci].data.push(f?f.total:0);});});
-    window._chart=new Chart(canvas,{type:"bar",data:{labels:ek.map(k=>DATA.entities[k].label),datasets:dss},options:{
-      responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{padding:10,usePointStyle:true,font:{size:10}}}},
+  if(st.cm==="cat"){
+    const cs=["정기반소모품","수선용소모품","절단용소모품","구매부자재"];
+    const cl=["#1f3864","#2563eb","#7c3aed","#b88a2e"];
+    const dss=cs.map((c,ci)=>({label:c,data:[],backgroundColor:cl[ci],borderColor:cl[ci],borderWidth:1}));
+    ek.forEach(k=>{const d=D.ed[k];cs.forEach((c,ci)=>{const f=d.cats.find(x=>x.n===c);dss[ci].data.push(f?f.t:0);});});
+    window._c=new Chart(cv,{type:"bar",data:{labels:ek.map(k=>D.entities[k].label),datasets:dss},options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom",labels:{padding:10,usePointStyle:true,font:{size:10}}}},
       scales:{x:{grid:{display:false}},y:{beginAtZero:true,title:{display:true,text:"소모품비 ($)",font:{size:10}}}}
     }});
-  } else {
-    const dss=ek.map((k,i)=>({
-      label:DATA.entities[k].label, data:DATA.timeSeries[k],
-      borderColor:DATA.entities[k].color, backgroundColor:DATA.entities[k].color+"22",
-      tension:0.3, fill:false, pointRadius:4
-    }));
-    window._chart=new Chart(canvas,{type:"line",data:{labels:["1월","2월","3월","4월","5월"],datasets:dss},options:{
+  }else{
+    const dss=ek.map(k=>({label:D.entities[k].label,data:D.ts[k],borderColor:D.entities[k].color,backgroundColor:D.entities[k].color+"22",tension:0.3,fill:false,pointRadius:4}));
+    window._c=new Chart(cv,{type:"line",data:{labels:["1월","2월","3월","4월","5월"],datasets:dss},options:{
       responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:false},
       plugins:{legend:{position:"bottom",labels:{padding:10,usePointStyle:true,font:{size:10}}}},
       scales:{x:{grid:{display:false}},y:{beginAtZero:true,title:{display:true,text:"소모품비 ($)",font:{size:10}}}}
     }});
   }
 }
-
-function renderTable(){
-  const tb=o("#detailTbody"); tb.innerHTML="";
-  const ek=Object.keys(DATA.entityData).filter(k=>state.selected[k]);
-  const allSup=[];
+function rt(){
+  const tb=$("#dtb");tb.innerHTML="";
+  const ek=Object.keys(D.ed).filter(k=>st.sel[k]);
+  const al=[];
   ek.forEach(k=>{
-    const d=DATA.entityData[k];const e=DATA.entities[k];const r=d.wageVND?(d.consVND/d.wageVND*100):0;
+    const d=D.ed[k];const e=D.entities[k];const r=d.wageVND?(d.consVND/d.wageVND*100):0;
     const fc=r<=1?"#059669":r<=3?"#b88a2e":"#dc2626";
     let tr=document.createElement("tr");tr.className="gh";
     tr.innerHTML=`<td colspan="7">${e.label} — 2026년 5월</td>`;tb.appendChild(tr);
     tr=document.createElement("tr");tr.className="sh";
-    tr.innerHTML=`<td class="l">소모품비</td><td>${d.consVND.toLocaleString()} VND</td><td class="l">가공임</td><td>${d.wageVND.toLocaleString()} VND</td><td class="l">비율</td><td><span style="background:${fc};color:#fff;border-radius:4px;padding:1px 6px;font-weight:700">${r.toFixed(2)}%</span></td><td></td>`;
+    tr.innerHTML=`<td class="l">소모품비</td><td>${d.consVND.toLocaleString()} VND</td><td class="l">소모품비($)</td><td>$${d.consAmt.toLocaleString()}</td><td class="l">효율</td><td><span style="background:${fc};color:#fff;border-radius:4px;padding:1px 6px;font-weight:700">${r.toFixed(2)}%</span></td><td></td>`;
     tb.appendChild(tr);
     tr=document.createElement("tr");tr.className="sh";
-    tr.innerHTML=`<td class="l">VAT</td><td>${d.vat.toLocaleString()} VND</td><td class="l">합계(VAT포함)</td><td>${d.totalVND.toLocaleString()} VND</td><td class="l">USD</td><td>$${d.consAmt.toLocaleString()}</td><td></td>`;
+    tr.innerHTML=`<td class="l">가공임($)</td><td>$${d.wageAmt.toLocaleString()}</td><td class="l">VAT($)</td><td>$${d.vatAmt.toLocaleString()}</td><td class="l">합계($)</td><td>$${d.totalAmt.toLocaleString()}</td><td></td>`;
     tb.appendChild(tr);
-    // Category
     tr=document.createElement("tr");tr.style.cssText="background:#f5f7fa;font-weight:700";
     tr.innerHTML=`<td class="l">카테고리</td><td>합계($)</td><td>1월</td><td>2월</td><td>3월</td><td>4월</td><td>5월</td>`;
     tb.appendChild(tr);
-    d.categories.forEach(c=>{
+    d.cats.forEach(c=>{
       tr=document.createElement("tr");
-      let h=`<td class="l">${c.name}</td><td>$${c.total.toFixed(2)}</td>`;
-      c.months.forEach(m=>h+=`<td>$${(m||0).toFixed(2)}</td>`);h+="<td></td>";
+      let h=`<td class="l">${c.n}</td><td>$${c.t.toFixed(2)}</td>`;
+      c.m.forEach(m=>h+=`<td>$${(m||0).toFixed(2)}</td>`);h+="<td></td>";
       tr.innerHTML=h;tb.appendChild(tr);
     });
-    // Suppliers
     tr=document.createElement("tr");tr.style.cssText="background:#f5f7fa;font-weight:700";
     tr.innerHTML=`<td class="l" colspan="7">협력사별 (2026년 5월)</td>`;tb.appendChild(tr);
-    d.suppliers.forEach(sup=>{
+    d.sups.forEach(s=>{
       tr=document.createElement("tr");
-      tr.innerHTML=`<td class="l">${sup.name}</td><td>${sup.vnd.toLocaleString()} VND</td><td>$${(sup.vnd/EX).toFixed(2)}</td><td>${sup.note||""}</td><td></td><td></td><td></td>`;
+      tr.innerHTML=`<td class="l">${s.n}</td><td>${s.v.toLocaleString()} VND</td><td>$${(s.v/EX).toFixed(2)}</td><td>${s.d||""}</td><td></td><td></td><td></td>`;
       tb.appendChild(tr);
-      allSup.push({entity:e.label,name:sup.name,vnd:sup.vnd,note:sup.note});
+      al.push({e:e.label,n:s.n,v:s.v,d:s.d});
     });
   });
-  // All suppliers table in detail tab
-  const atb=o("#allSupplierTbody");
-  if(atb){
-    atb.innerHTML="";allSup.sort((a,b)=>b.vnd-a.vnd);
-    allSup.forEach(s=>{
+  const at=$("#astb");
+  if(at){
+    at.innerHTML="";al.sort((a,b)=>b.v-a.v);
+    al.forEach(s=>{
       const tr=document.createElement("tr");
-      tr.innerHTML=`<td class="l">${s.name}</td><td>${s.entity}</td><td>${s.note}</td><td>${s.vnd.toLocaleString()} VND</td><td>$${(s.vnd/EX).toFixed(2)}</td>`;
-      atb.appendChild(tr);
+      tr.innerHTML=`<td class="l">${s.n}</td><td>${s.e}</td><td>${s.d}</td><td>${s.v.toLocaleString()} VND</td><td>$${(s.v/EX).toFixed(2)}</td>`;
+      at.appendChild(tr);
     });
   }
 }
-
-function renderAll(){renderKPIs();renderEntityCards();renderChart();renderTable();}
-
-document.addEventListener("DOMContentLoaded",()=>{
-  renderAll();
-  s(".btn.cmode").forEach(b=>b.className="btn cmode"+(b.dataset.mode===state.chartMode?" on":""));
-});
+function ra(){rk();re();rc();rt();}
+document.addEventListener("DOMContentLoaded",()=>{ra();$$(".btn.cm").forEach(b=>b.className="btn cm"+(b.dataset.m===st.cm?" on":""));});
 </script>
 
 <div class="tabs">
-  <div class="tab on" id="tabAll" onclick="switchTab('all')">종합</div>
-  <div class="tab" id="tabDetail" onclick="switchTab('detail')">상세</div>
+  <div class="tab on" id="tabAll" onclick="sw('all')">종합</div>
+  <div class="tab" id="tabD" onclick="sw('d')">상세</div>
 </div>
 
-<div id="tabAllContent">
+<div id="tabAllC">
   <div class="kpis" id="kpiGrid"></div>
   <div id="entityRow"></div>
   <div class="panel">
     <div class="row" style="margin-bottom:8px">
       <h3 style="margin:0;font-size:12px;width:auto">소모품비 분석</h3>
       <div class="csep"></div>
-      <button class="btn cmode on" data-mode="monthly" onclick="setChartMode('monthly')">월별 추이</button>
-      <button class="btn cmode" data-mode="category" onclick="setChartMode('category')">카테고리</button>
+      <button class="btn cm on" data-m="monthly" onclick="scm('monthly')">월별 추이</button>
+      <button class="btn cm" data-m="cat" onclick="scm('cat')">카테고리</button>
     </div>
     <div class="chart"><canvas id="mainChart"></canvas></div>
   </div>
   <div class="panel">
     <h3>법인별 상세</h3>
-    <table><thead><tr><th class="l">구분</th><th>값</th><th class="l">구분</th><th>값</th><th class="l">구분</th><th>값</th><th></th></tr></thead><tbody id="detailTbody"></tbody></table>
+    <table><thead><tr><th class="l">구분</th><th>값</th><th class="l">구분</th><th>값</th><th class="l">구분</th><th>값</th><th></th></tr></thead><tbody id="dtb"></tbody></table>
   </div>
 </div>
 
-<div id="tabDetailContent" style="display:none">
+<div id="tabDC" style="display:none">
   <div class="panel">
     <h3>전체 협력사 소모품비 합산</h3>
-    <table><thead><tr><th class="l">협력사</th><th class="l">법인</th><th class="l">구분</th><th>금액(VND)</th><th>금액($)</th></tr></thead><tbody id="allSupplierTbody"></tbody></table>
+    <table><thead><tr><th class="l">협력사</th><th class="l">법인</th><th class="l">구분</th><th>금액(VND)</th><th>금액($)</th></tr></thead><tbody id="astb"></tbody></table>
   </div>
   <div class="panel">
     <h3>데이터 요약</h3>
     <div class="note">
       <b>출처:</b> 2026년_05월_소모품_현황_의류창_JSV / 핸드백_JSB<br>
-      <b>기준:</b> USD 1 = VND 26,000 · VAT 8~10%<br>
       <b>기간:</b> 2026.05.02 ~ 2026.05.30<br>
-      <b>소모품비율:</b> 소모품비(VND) ÷ 가공임(VND) × 100
+      <b>환율:</b> US$1 = VND 26,000<br>
+      <b>효율(소모품비율):</b> 소모품비(VND) ÷ 가공임(VND) × 100
     </div>
   </div>
 </div>
 
-<div class="foot">약진 · JSV(의류) · JSB(핸드백) · 2026년 5월 마감 · 오프라인 대시보드</div>
+<div class="foot">약진 · JSV(의류) · JSB(핸드백) · 2026년 5월 · US$ 기준</div>
 
-<div class="modal-bg" onclick="closeFormula()"><div class="modal" onclick="event.stopPropagation()"><h4>KPI</h4><div class="mb"><div class="formula"></div></div><div class="mclose" onclick="closeFormula()">닫기</div></div></div>
+<div class="modal-bg" onclick="cf()"><div class="modal" onclick="event.stopPropagation()"><h4>KPI</h4><div class="mb"><div class="formula"></div></div><div class="mclose" onclick="cf()">닫기</div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body></html>
