@@ -27,7 +27,6 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
 .ecard{flex:0 0 100px;border:1.5px solid var(--line);border-radius:8px;padding:6px 3px;text-align:center;cursor:pointer;transition:.12s;background:#fff}
 .ecard:not(.on){opacity:.45}
 .ecard .eab{font-size:12.5px;font-weight:800}.ecard .esc{font-size:11px;font-weight:800;margin-top:3px}
-.ecard .egr{display:inline-block;font-size:9px;font-weight:800;border-radius:3px;padding:0 4px;color:#fff;margin-top:3px}
 .chart{position:relative;height:360px}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -35,8 +34,6 @@ th{color:var(--muted);font-size:10.5px;position:sticky;top:0;background:#fff}
 td.l,th.l{text-align:left}
 tr.gh td{background:#eef2f8;font-weight:800;font-size:12px;color:var(--navy);padding:8px}
 tr.sh td{background:#f8fafc;font-weight:700;color:var(--navy)}
-.flag{display:inline-block;min-width:22px;font-size:10px;font-weight:800;border-radius:4px;padding:1px 4px;text-align:center;margin-right:5px;color:#fff}
-.muted{color:var(--muted)}.note{font-size:11px;color:var(--muted);margin-top:7px}
 .foot{color:var(--muted);font-size:10.5px;margin-top:18px;border-top:1px solid var(--line);padding-top:11px}
 .tabs{display:flex;gap:6px;margin-bottom:10px}
 .tab{background:#fff;border:1px solid var(--line);border-bottom:3px solid transparent;border-radius:9px 9px 0 0;padding:9px 18px;font-size:13px;font-weight:800;color:var(--muted);cursor:pointer}
@@ -45,7 +42,6 @@ tr.sh td{background:#f8fafc;font-weight:700;color:var(--navy)}
 .modal-bg.show{display:flex}
 .modal{background:#fff;border-radius:12px;max-width:460px;width:100%;padding:18px 20px;box-shadow:0 12px 44px rgba(0,0,0,.35)}
 .modal h4{color:var(--navy);font-size:15px;margin-bottom:8px}
-.modal .formula{background:#eef2f8;border-radius:8px;padding:9px 12px;font-size:13px;margin:8px 0;color:var(--navy);font-weight:800}
 .modal .mb{font-size:12.5px;color:#374151;line-height:1.65}
 .modal .mclose{margin-top:14px;text-align:center;background:var(--navy);color:#fff;border-radius:7px;padding:8px;cursor:pointer;font-weight:700}
 @media(max-width:900px){.grid2{grid-template-columns:1fr}}
@@ -58,20 +54,19 @@ const EX=26000;
 const D={
   entities:{JSV:{label:"의류 JSV",group:"의류",color:"#1f3864",short:"JSV"},JSB:{label:"핸드백 JSB",group:"핸드백",color:"#b88a2e",short:"JSB"}},
   kpiDefs:[
-    {id:"consAmt",label:"소모품비($)","formula":"소모품비(VND) ÷ 26,000","unit":"$"},
-    {id:"wageAmt",label:"가공임($)","formula":"가공임(VND) ÷ 26,000","unit":"$"},
-    {id:"consVND",label:"소모품비(VND)","formula":"당월 소모품비 (VAT 제외)","unit":"VND"},
-    {id:"ratio",label:"효율(%)","formula":"소모품비(VND) ÷ 가공임(VND) × 100","unit":"%"},
-    {id:"vatUSD",label:"VAT($)","formula":"부가세(VND) ÷ 26,000","unit":"$"},
-    {id:"totalUSD",label:"합계($)","formula":"(소모품비+VAT) ÷ 26,000","unit":"$"}
+    {id:"consAmt",label:"소모품비($)",formula:"소모품비(VND) ÷ 환율(26,000)","unit":"$"},
+    {id:"consVND",label:"소모품비(VND)",formula:"당월 소모품비 (VAT 제외)","unit":"VND"},
+    {id:"vatAmt",label:"VAT($)",formula:"부가세(VND) ÷ 26,000","unit":"$"},
+    {id:"totalAmt",label:"합계($)",formula:"(소모품비+부가세) ÷ 26,000","unit":"$"}
   ],
   ed:{
-    JSV:{name:"의류 JSV",consVND:125554000,consAmt:4829,wageVND:940700,wageAmt:36,vatVND:9553640,vatAmt:367,totalVND:135107640,totalAmt:5196,ratio:0.86,
+    JSV:{name:"의류 JSV",consVND:125554000,consAmt:4829,vatVND:9553640,vatAmt:367,totalVND:135107640,totalAmt:5196,
+      prodQty:940700,monthlyCons:[7699.88,5273.85,11347.29,5678.82,7132.06],
       cats:[
-        {n:"정기반소모품",t:12671.33,m:[2853.76,1905.66,2318.41,3227.67,2365.82]},
-        {n:"수선용소모품",t:7486.11,m:[1717.99,2005.92,1103.35,1300.60,1358.25]},
-        {n:"절단용소모품",t:2955.46,m:[1174.46,284.44,710.65,352.87,433.04]},
-        {n:"구매부자재",t:14019.01,m:[1953.67,1077.83,7214.88,797.68,2974.95]}
+        {n:"봉제반소모품",t:12671.33,m:[2853.76,1905.66,2318.41,3227.67,2365.82]},
+        {n:"재단반소모품",t:7486.11,m:[1717.99,2005.92,1103.35,1300.60,1358.25]},
+        {n:"완성반소모품",t:2955.46,m:[1174.46,284.44,710.65,352.87,433.04]},
+        {n:"기계수리부속",t:14019.01,m:[1953.67,1077.83,7214.88,797.68,2974.95]}
       ],
       sups:[
         {n:"PHUOC THUANH (TAE GWANG)",v:75545460,d:"PLANT 2"},
@@ -82,12 +77,13 @@ const D={
         {n:"BAMBU",v:4185000,d:"PLANT 2"}
       ]
     },
-    JSB:{name:"핸드백 JSB",consVND:197336622,consAmt:7590,wageVND:1228786,wageAmt:47,vatVND:16265408,vatAmt:626,totalVND:213602030,totalAmt:8215,ratio:4.89,
+    JSB:{name:"핸드백 JSB",consVND:197336622,consAmt:7590,vatVND:16265408,vatAmt:626,totalVND:213602030,totalAmt:8215,
+      prodQty:0,monthlyCons:[11744.70,8222.94,11264.95,9865.98,8822.58],
       cats:[
-        {n:"정기반소모품",t:21247.35,m:[3305.33,2306.55,6787.95,5407.87,3439.65]},
-        {n:"수선용소모품",t:10833.83,m:[2208.15,1938.82,2835.36,1799.39,2052.10]},
-        {n:"절단용소모품",t:7863.57,m:[1228.67,1082.49,1093.16,1775.83,2683.42]},
-        {n:"구매부자재",t:9976.41,m:[5002.55,2895.08,548.49,882.88,647.41]}
+        {n:"봉제반소모품",t:21247.35,m:[3305.33,2306.55,6787.95,5407.87,3439.65]},
+        {n:"재단반소모품",t:10833.83,m:[2208.15,1938.82,2835.36,1799.39,2052.10]},
+        {n:"완성반소모품",t:7863.57,m:[1228.67,1082.49,1093.16,1775.83,2683.42]},
+        {n:"기계수리부속",t:9976.41,m:[5002.55,2895.08,548.49,882.88,647.41]}
       ],
       sups:[
         {n:"GIANG LONG",v:32138836,d:"HB/SLG"},
@@ -98,8 +94,7 @@ const D={
         {n:"PHUOC THU",v:4536000,d:"HB"}
       ]
     }
-  },
-  ts:{JSV:[7699.88,5273.85,11347.29,5678.82,7132.06],JSB:[11744.70,8222.94,11264.95,9865.98,8822.58]}
+  }
 };
 let st={sel:{JSV:true,JSB:true},tab:"all",cm:"monthly"};
 function $(q){return document.querySelector(q);}
@@ -109,23 +104,20 @@ function sw(t){st.tab=t;$("#tabAll").className="tab"+(t==="all"?" on":"");$("#ta
 function scm(m){st.cm=m;$$(".btn.cm").forEach(b=>b.className="btn cm"+(b.dataset.m===m?" on":""));rc();}
 function sf(k){const d=D.kpiDefs.find(x=>x.id===k);$(".modal h4").textContent=d?d.label:k;$(".modal .formula").textContent=d?d.formula:"";$(".modal-bg").classList.add("show");}
 function cf(){$(".modal-bg").classList.remove("show");}
-function fs(v,d){return typeof v==='number'?'$'+v.toLocaleString(undefined,{minimumFractionDigits:d||0,maximumFractionDigits:d||0}):v;}
 function rk(){
   const c=$("#kpiGrid");c.innerHTML="";
   const ek=Object.keys(D.ed).filter(k=>st.sel[k]);
   if(!ek.length){c.innerHTML='<div class="muted" style="text-align:center;padding:30px">법인 선택</div>';return;}
-  const s={cV:0,cA:0,wV:0,wA:0,vV:0,vA:0,tV:0,tA:0};
-  ek.forEach(k=>{const d=D.ed[k];s.cV+=d.consVND;s.cA+=d.consAmt;s.wV+=d.wageVND;s.wA+=d.wageAmt;s.vV+=d.vatVND;s.vA+=d.vatAmt;s.tV+=d.totalVND;s.tA+=d.totalAmt;});
+  const s={cV:0,cA:0,vV:0,vA:0,tV:0,tA:0};
+  ek.forEach(k=>{const d=D.ed[k];s.cV+=d.consVND;s.cA+=d.consAmt;s.vV+=d.vatVND;s.vA+=d.vatAmt;s.tV+=d.totalVND;s.tA+=d.totalAmt;});
   D.kpiDefs.forEach(kd=>{
     let v="";const u=kd.unit;
-    if(kd.id==="consAmt"){v=fs(s.cA,0)}
-    else if(kd.id==="wageAmt"){v=fs(s.wA,0)}
+    if(kd.id==="consAmt"){v="$"+s.cA.toLocaleString()}
     else if(kd.id==="consVND"){v=s.cV.toLocaleString()}
-    else if(kd.id==="ratio"){const r=s.wV?(s.cV/s.wV*100):0;v=r.toFixed(2)}
-    else if(kd.id==="vatUSD"){v=fs(s.vA,0)}
-    else if(kd.id==="totalUSD"){v=fs(s.tA,0)}
+    else if(kd.id==="vatAmt"){v="$"+s.vA.toLocaleString()}
+    else if(kd.id==="totalAmt"){v="$"+s.tA.toLocaleString()}
     const div=document.createElement("div");div.className="ckpi";div.onclick=()=>sf(kd.id);
-    div.innerHTML=`<div class="ckh">${kd.label}</div><div class="ckv">${v} <span class="cks">${u}</span></div><div class="ckd">선택 ${ek.length}개</div>`;
+    div.innerHTML=`<div class="ckh">${kd.label}</div><div class="ckv">${v} <span class="cks">${u}</span></div><div class="ckd">선택 ${ek.length}개 법인</div>`;
     c.appendChild(div);
   });
 }
@@ -143,11 +135,9 @@ function re(){
     const ch=document.createElement("div");ch.className="echips";
     ks.forEach(k=>{
       const e=D.entities[k];const d=D.ed[k];
-      const r=d.wageVND?(d.consVND/d.wageVND*100):0;
-      const fc=r<=1?"#059669":r<=3?"#b88a2e":"#dc2626";
       const ec=document.createElement("div");ec.className="ecard"+(st.sel[k]?" on":"");
       ec.onclick=()=>tog(k);
-      ec.innerHTML=`<div class="eab">${e.short}</div><div class="esc" style="color:${e.color}">$${d.consAmt.toLocaleString()}</div><div class="egr" style="background:${fc}">${r.toFixed(1)}%</div>`;
+      ec.innerHTML=`<div class="eab">${e.short}</div><div class="esc" style="color:${e.color}">$${d.consAmt.toLocaleString()}</div>`;
       ch.appendChild(ec);
     });
     gd.appendChild(ch);c.appendChild(gd);
@@ -159,7 +149,7 @@ function rc(){
   const ek=Object.keys(D.ed).filter(k=>st.sel[k]);
   if(!ek.length)return;
   if(st.cm==="cat"){
-    const cs=["정기반소모품","수선용소모품","절단용소모품","구매부자재"];
+    const cs=["봉제반소모품","재단반소모품","완성반소모품","기계수리부속"];
     const cl=["#1f3864","#2563eb","#7c3aed","#b88a2e"];
     const dss=cs.map((c,ci)=>({label:c,data:[],backgroundColor:cl[ci],borderColor:cl[ci],borderWidth:1}));
     ek.forEach(k=>{const d=D.ed[k];cs.forEach((c,ci)=>{const f=d.cats.find(x=>x.n===c);dss[ci].data.push(f?f.t:0);});});
@@ -169,12 +159,28 @@ function rc(){
       scales:{x:{grid:{display:false}},y:{beginAtZero:true,title:{display:true,text:"소모품비 ($)",font:{size:10}}}}
     }});
   }else{
-    const dss=ek.map(k=>({label:D.entities[k].label,data:D.ts[k],borderColor:D.entities[k].color,backgroundColor:D.entities[k].color+"22",tension:0.3,fill:false,pointRadius:4}));
-    window._c=new Chart(cv,{type:"line",data:{labels:["1월","2월","3월","4월","5월"],datasets:dss},options:{
-      responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:false},
-      plugins:{legend:{position:"bottom",labels:{padding:10,usePointStyle:true,font:{size:10}}}},
-      scales:{x:{grid:{display:false}},y:{beginAtZero:true,title:{display:true,text:"소모품비 ($)",font:{size:10}}}}
-    }});
+    const monthLabels=["2025-01","2025-02","2025-03","2025-04","2025-05"];
+    const dss=ek.map(k=>({
+      label:D.entities[k].label,
+      data:D.ed[k].monthlyCons,
+      borderColor:D.entities[k].color,
+      backgroundColor:D.entities[k].color+"22",
+      tension:0.3,fill:false,pointRadius:4
+    }));
+    window._c=new Chart(cv,{
+      type:"line",
+      data:{labels:["1월","2월","3월","4월","5월"],datasets:dss},
+      options:{
+        responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:false},
+        plugins:{
+          legend:{position:"bottom",labels:{padding:10,usePointStyle:true,font:{size:10}}}
+        },
+        scales:{
+          x:{grid:{display:false}},
+          y:{beginAtZero:true,title:{display:true,text:"소모품비 ($)",font:{size:10}}}
+        }
+      }
+    });
   }
 }
 function rt(){
@@ -182,16 +188,16 @@ function rt(){
   const ek=Object.keys(D.ed).filter(k=>st.sel[k]);
   const al=[];
   ek.forEach(k=>{
-    const d=D.ed[k];const e=D.entities[k];const r=d.wageVND?(d.consVND/d.wageVND*100):0;
-    const fc=r<=1?"#059669":r<=3?"#b88a2e":"#dc2626";
+    const d=D.ed[k];const e=D.entities[k];
     let tr=document.createElement("tr");tr.className="gh";
-    tr.innerHTML=`<td colspan="7">${e.label} — 2026년 5월</td>`;tb.appendChild(tr);
+    tr.innerHTML=`<td colspan="7">${e.label} — 2026년 5월 소모품비</td>`;tb.appendChild(tr);
     tr=document.createElement("tr");tr.className="sh";
-    tr.innerHTML=`<td class="l">소모품비</td><td>${d.consVND.toLocaleString()} VND</td><td class="l">소모품비($)</td><td>$${d.consAmt.toLocaleString()}</td><td class="l">효율</td><td><span style="background:${fc};color:#fff;border-radius:4px;padding:1px 6px;font-weight:700">${r.toFixed(2)}%</span></td><td></td>`;
+    tr.innerHTML=`<td class="l">소모품비(VND)</td><td>${d.consVND.toLocaleString()}</td><td class="l">소모품비($)</td><td>$${d.consAmt.toLocaleString()}</td><td class="l">VAT</td><td>+$${d.vatAmt.toLocaleString()}</td><td></td>`;
     tb.appendChild(tr);
     tr=document.createElement("tr");tr.className="sh";
-    tr.innerHTML=`<td class="l">가공임($)</td><td>$${d.wageAmt.toLocaleString()}</td><td class="l">VAT($)</td><td>$${d.vatAmt.toLocaleString()}</td><td class="l">합계($)</td><td>$${d.totalAmt.toLocaleString()}</td><td></td>`;
+    tr.innerHTML=`<td class="l">합계(VAT포함)</td><td>$${d.totalAmt.toLocaleString()}</td><td class="l">환율</td><td>VND 26,000/$</td><td></td><td></td><td></td>`;
     tb.appendChild(tr);
+    // Category monthly
     tr=document.createElement("tr");tr.style.cssText="background:#f5f7fa;font-weight:700";
     tr.innerHTML=`<td class="l">카테고리</td><td>합계($)</td><td>1월</td><td>2월</td><td>3월</td><td>4월</td><td>5월</td>`;
     tb.appendChild(tr);
@@ -201,8 +207,9 @@ function rt(){
       c.m.forEach(m=>h+=`<td>$${(m||0).toFixed(2)}</td>`);h+="<td></td>";
       tr.innerHTML=h;tb.appendChild(tr);
     });
+    // Suppliers
     tr=document.createElement("tr");tr.style.cssText="background:#f5f7fa;font-weight:700";
-    tr.innerHTML=`<td class="l" colspan="7">협력사별 (2026년 5월)</td>`;tb.appendChild(tr);
+    tr.innerHTML=`<td class="l" colspan="7">협력사별 소모품비 (2026년 5월)</td>`;tb.appendChild(tr);
     d.sups.forEach(s=>{
       tr=document.createElement("tr");
       tr.innerHTML=`<td class="l">${s.n}</td><td>${s.v.toLocaleString()} VND</td><td>$${(s.v/EX).toFixed(2)}</td><td>${s.d||""}</td><td></td><td></td><td></td>`;
@@ -236,7 +243,7 @@ document.addEventListener("DOMContentLoaded",()=>{ra();$$(".btn.cm").forEach(b=>
     <div class="row" style="margin-bottom:8px">
       <h3 style="margin:0;font-size:12px;width:auto">소모품비 분석</h3>
       <div class="csep"></div>
-      <button class="btn cm on" data-m="monthly" onclick="scm('monthly')">월별 추이</button>
+      <button class="btn cm on" data-m="monthly" onclick="scm('monthly')">월별 추이 (2025)</button>
       <button class="btn cm" data-m="cat" onclick="scm('cat')">카테고리</button>
     </div>
     <div class="chart"><canvas id="mainChart"></canvas></div>
@@ -258,7 +265,7 @@ document.addEventListener("DOMContentLoaded",()=>{ra();$$(".btn.cm").forEach(b=>
       <b>출처:</b> 2026년_05월_소모품_현황_의류창_JSV / 핸드백_JSB<br>
       <b>기간:</b> 2026.05.02 ~ 2026.05.30<br>
       <b>환율:</b> US$1 = VND 26,000<br>
-      <b>효율(소모품비율):</b> 소모품비(VND) ÷ 가공임(VND) × 100
+      <b>주의:</b> 소모품비 데이터만 포함 (가공임 데이터 제외)
     </div>
   </div>
 </div>
